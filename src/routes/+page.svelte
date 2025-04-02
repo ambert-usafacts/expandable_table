@@ -66,6 +66,13 @@
 			agency.percent_of_total =
 				(agency.total_value / totalValueAllAgencies) * 100;
 
+			// If the agency has only one bureau and the bureau name matches the agency name, omit bureaus
+			const bureauNames = Object.keys(agency.bureaus);
+			if (bureauNames.length === 1 && bureauNames[0] === agencyName) {
+				// Remove bureaus completely if the bureau name matches the agency name
+				agency.bureaus = {}; // Set it to an empty array
+			}
+
 			for (const bureauName in agency.bureaus) {
 				const bureau = agency.bureaus[bureauName];
 
@@ -95,15 +102,33 @@
 		return sortedData;
 	});
 
+	const headers = ["Toggle", "Agency", "2024 Spending", "% of Total"];
+
 	$effect(() => {
 		console.log({ nestedData, totalValueAllAgencies });
 	});
 </script>
 
 <table>
+	<thead>
+		<tr>
+			{#each headers as header}
+				{#if header === "Toggle"}
+					<th><span class="visually-hidden">{header}</span></th>
+				{:else}
+					<th>{header}</th>
+				{/if}
+			{/each}
+		</tr>
+	</thead>
 	<tbody>
 		{#each Object.values(nestedData) as { agency_name, total_value, percent_of_total, bureaus }}
 			<tr>
+				<td
+					>{#if Object.entries(bureaus).length}
+						HAS BUREAUS
+					{:else}{/if}
+				</td>
 				<td>{agency_name}</td>
 				<td>{dollarFormat(total_value)}</td>
 				<td>{percentFormat(percent_of_total)}</td>
@@ -111,3 +136,18 @@
 		{/each}
 	</tbody>
 </table>
+
+<style>
+	/* Proven method to visually hide something but */
+	/* still make it available to assistive technology */
+	.visually-hidden {
+		position: absolute;
+		top: auto;
+		overflow: hidden;
+		clip: rect(1px 1px 1px 1px); /* IE 6/7 */
+		clip: rect(1px, 1px, 1px, 1px);
+		width: 1px;
+		height: 1px;
+		white-space: nowrap;
+	}
+</style>
