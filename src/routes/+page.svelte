@@ -123,11 +123,27 @@
 		Object.values(nestedData).forEach((d, i) => (buttonStates[i] = false));
 	};
 
+	const pseudoElements = $derived.by(() => {
+		const els = [];
+		headers.forEach((d, i) => {
+			if (d !== "Toggle")
+				els.push(`td:nth-child(${i + 1})::before {content: '${d}';}`);
+		});
+
+		return els.join(" ");
+	});
+
 	$effect(() => {
 		initializeButtonStates(nestedData);
-		$inspect({ buttonStates });
+		$inspect({ buttonStates, pseudoElements });
 	});
 </script>
+
+<svelte:head>
+	{@html `<style>
+${pseudoElements}
+	</style>`}
+</svelte:head>
 
 <table>
 	<thead>
@@ -268,5 +284,41 @@
 
 	td.agency span {
 		color: #8c8d91;
+	}
+
+	td::before {
+		display: none;
+	}
+
+	@media screen and (max-width: 37em), print and (max-width: 5in) {
+		table,
+		tr,
+		td {
+			display: block;
+		}
+		tr {
+			padding: 0.7em 2vw;
+		}
+		th,
+		tr:first-of-type {
+			display: none;
+		}
+		td::before {
+			display: inline;
+			font-weight: bold;
+		}
+		td {
+			display: grid;
+			grid-template-columns: 4em auto;
+			grid-gap: 1em 0.5em;
+		}
+
+		td::before {
+			display: inline;
+			font-weight: bold;
+		}
+		td:nth-of-type(2)::before {
+			font-style: normal;
+		}
 	}
 </style>
