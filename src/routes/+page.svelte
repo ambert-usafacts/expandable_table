@@ -145,8 +145,20 @@
 		{#each Object.values(nestedData) as { agency_name, total_value, percent_of_total, bureaus }, rowIndex}
 			{@const bureauIDs = generateBureauIDs(rowIndex, bureaus)}
 			{@const numberOfBureaus = Object.entries(bureaus).length}
+			{@const expanded = buttonStates[rowIndex] === true}
 			<tr>
-				<td>{agency_name}</td>
+				<td class="agency">
+					{agency_name}
+					{#if numberOfBureaus}
+						<span
+							>+{numberOfBureaus} bureaus |
+
+							<a href="https://usafacts.org">Learn more</a></span
+						>
+					{:else}
+						<a href="https://usafacts.org">Learn more</a>
+					{/if}
+				</td>
 				<td>{dollarFormat(total_value)}</td>
 				<td>{percentFormat(percent_of_total)}</td>
 				<td
@@ -156,20 +168,18 @@
 							id={`button-${rowIndex}`}
 							aria-expanded={buttonStates[rowIndex]}
 							aria-controls={bureauIDs}
-							aria-label={`+${numberOfBureaus} sub-agencies`}
+							aria-label={`+${numberOfBureaus} bureaus`}
 							onclick={(buttonStates[rowIndex] = !buttonStates[rowIndex])}
 							><svg
-								width="16"
-								height="16"
-								viewBox="0 0 16 16"
-								fill="none"
 								xmlns="http://www.w3.org/2000/svg"
+								width="20"
+								height="21"
+								viewBox="0 0 20 21"
+								fill="none"
 							>
 								<path
-									d="M6.49902 5L9.49902 8L6.49902 11"
-									stroke="black"
-									stroke-width="1.5"
-									stroke-linecap="round"
+									d="M6.175 7.65002L10 11.475L13.825 7.65002L15 8.83336L10 13.8334L5 8.83336L6.175 7.65002Z"
+									fill="black"
 								/>
 							</svg></button
 						>
@@ -184,7 +194,10 @@
 				{#each sortedBureaus as { bureau_name, total_value, percent_of_total }}
 					{@const hidden = !buttonStates[rowIndex]}
 					<tr class="bureau" class:hidden>
-						<td>{bureau_name}</td>
+						<td class="bureau__td"
+							>{bureau_name}
+							<span><a href="https://usafacts.org">Learn more</a></span></td
+						>
 						<td>{dollarFormat(total_value)}</td>
 						<td>{percentFormat(percent_of_total)}</td>
 					</tr>
@@ -215,5 +228,35 @@
 
 	.bureau.hidden {
 		display: none;
+	}
+
+	button {
+		background: none;
+		color: inherit;
+		border: none;
+		padding: 0;
+		font: inherit;
+		cursor: pointer;
+		outline: inherit;
+	}
+
+	button[aria-expanded="true"] svg {
+		transform: rotate(180deg);
+	}
+
+	td {
+		padding: 1.5rem 0;
+		--tw-border-opacity: 1;
+		border-color: rgb(233 233 234 / var(--tw-border-opacity, 1));
+	}
+
+	td.agency,
+	td.bureau__td {
+		display: flex;
+		flex-direction: column;
+	}
+
+	td.agency span {
+		color: #8c8d91;
 	}
 </style>
