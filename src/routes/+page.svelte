@@ -102,11 +102,20 @@
 		return sortedData;
 	});
 
-	const headers = ["Toggle", "Agency", "2024 Spending", "% of Total"];
+	const headers = ["Agency", "2024 Spending", "% of Total", "Toggle"];
 
 	$effect(() => {
 		console.log({ nestedData, totalValueAllAgencies });
 	});
+
+	const generateBureauIDs = (rowIndex, bureaus) => {
+		const ids = [];
+		Object.keys(bureaus).forEach((d, i) => {
+			ids.push(`${rowIndex}-${i}`);
+		});
+
+		return ids;
+	};
 </script>
 
 <table>
@@ -122,16 +131,38 @@
 		</tr>
 	</thead>
 	<tbody>
-		{#each Object.values(nestedData) as { agency_name, total_value, percent_of_total, bureaus }}
+		{#each Object.values(nestedData) as { agency_name, total_value, percent_of_total, bureaus }, rowIndex}
+			{@const bureauIDs = generateBureauIDs(rowIndex, bureaus)}
+			{@const numberOfBureaus = Object.entries(bureaus).length}
 			<tr>
-				<td
-					>{#if Object.entries(bureaus).length}
-						HAS BUREAUS
-					{:else}{/if}
-				</td>
 				<td>{agency_name}</td>
 				<td>{dollarFormat(total_value)}</td>
 				<td>{percentFormat(percent_of_total)}</td>
+				<td
+					>{#if numberOfBureaus}
+						<button
+							type="button"
+							id={`button-${rowIndex}`}
+							aria-expanded="false"
+							aria-controls={bureauIDs}
+							aria-label={`+${numberOfBureaus} sub-agencies`}
+							><svg
+								width="16"
+								height="16"
+								viewBox="0 0 16 16"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									d="M6.49902 5L9.49902 8L6.49902 11"
+									stroke="black"
+									stroke-width="1.5"
+									stroke-linecap="round"
+								/>
+							</svg></button
+						>
+					{:else}{/if}
+				</td>
 			</tr>
 		{/each}
 	</tbody>
