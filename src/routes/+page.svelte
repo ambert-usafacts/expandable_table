@@ -1,2 +1,7 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<script>
+	import { csvParse } from "d3-dsv";
+	import { csv } from "d3-fetch";
+	import data from "../data.csv";
+
+	$effect(() => $inspect({ data }));
+</script>
