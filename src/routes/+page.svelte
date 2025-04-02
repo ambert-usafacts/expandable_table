@@ -176,6 +176,20 @@
 					{:else}{/if}
 				</td>
 			</tr>
+
+			{#if numberOfBureaus}
+				{@const sortedBureaus = Object.values(bureaus).sort(
+					(a, b) => b.total_value - a.total_value
+				)}
+				{#each sortedBureaus as { bureau_name, total_value, percent_of_total }}
+					{@const hidden = !buttonStates[rowIndex]}
+					<tr class="bureau" class:hidden>
+						<td>{bureau_name}</td>
+						<td>{dollarFormat(total_value)}</td>
+						<td>{percentFormat(percent_of_total)}</td>
+					</tr>
+				{/each}
+			{/if}
 		{/each}
 	</tbody>
 </table>
@@ -192,5 +206,14 @@
 		width: 1px;
 		height: 1px;
 		white-space: nowrap;
+	}
+
+	.bureau {
+		background-color: #f7f7f8;
+		text-indent: 1rem;
+	}
+
+	.bureau.hidden {
+		display: none;
 	}
 </style>
