@@ -208,6 +208,10 @@
 </table>
 
 <style>
+	table {
+		border-collapse: collapse;
+	}
+
 	/* Proven method to visually hide something but */
 	/* still make it available to assistive technology */
 	.visually-hidden {
@@ -242,6 +246,12 @@
 
 	button[aria-expanded="true"] svg {
 		transform: rotate(180deg);
+	}
+
+	tbody tr {
+		border: solid;
+		border-width: 1px 0;
+		border-color: rgb(233 233 234);
 	}
 
 	td {
