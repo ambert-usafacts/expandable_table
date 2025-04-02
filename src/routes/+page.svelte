@@ -4,6 +4,7 @@
 	import { csvParse } from "d3-dsv";
 	import { csv } from "d3-fetch";
 	import data from "../data.csv";
+	import { dollarFormat, percentFormat } from "../lib/utils.js";
 
 	// ok, I need to figure out how to nest this data for use in the table.
 	// for the moment, that is bureau nested inside agency with rollup totals.
@@ -15,7 +16,8 @@
 		const tempData = {};
 
 		if (data) {
-			data.forEach((row) => {
+			const spendingOnly = data.filter((d) => d.level_1 === "Spending");
+			spendingOnly.forEach((row) => {
 				const agencyName = row.agency_name;
 				const bureauName = row.bureau;
 				const programName = row.program;
@@ -79,7 +81,18 @@
 			}
 		}
 
-		return tempData;
+		// Step 3: Sort agencies in descending order of their total value
+		const sortedNestedData = Object.keys(tempData)
+			.map((agencyName) => tempData[agencyName]) // Convert the object to an array of agencies
+			.sort((a, b) => b.total_value - a.total_value); // Sort by total_value in descending order
+
+		// Rebuild the nestedData structure with sorted agencies
+		const sortedData = {};
+		sortedNestedData.forEach((agency) => {
+			sortedData[agency.agency_name] = agency;
+		});
+
+		return sortedData;
 	});
 
 	$effect(() => {
@@ -92,8 +105,8 @@
 		{#each Object.values(nestedData) as { agency_name, total_value, percent_of_total, bureaus }}
 			<tr>
 				<td>{agency_name}</td>
-				<td>{total_value}</td>
-				<td>{percent_of_total}</td>
+				<td>{dollarFormat(total_value)}</td>
+				<td>{percentFormat(percent_of_total)}</td>
 			</tr>
 		{/each}
 	</tbody>
