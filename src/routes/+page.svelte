@@ -116,6 +116,17 @@
 
 		return ids;
 	};
+
+	const buttonStates = $state({});
+
+	const initializeButtonStates = (nestedData) => {
+		Object.values(nestedData).forEach((d, i) => (buttonStates[i] = false));
+	};
+
+	$effect(() => {
+		initializeButtonStates(nestedData);
+		$inspect({ buttonStates });
+	});
 </script>
 
 <table>
@@ -143,9 +154,10 @@
 						<button
 							type="button"
 							id={`button-${rowIndex}`}
-							aria-expanded="false"
+							aria-expanded={buttonStates[rowIndex]}
 							aria-controls={bureauIDs}
 							aria-label={`+${numberOfBureaus} sub-agencies`}
+							onclick={(buttonStates[rowIndex] = !buttonStates[rowIndex])}
 							><svg
 								width="16"
 								height="16"
